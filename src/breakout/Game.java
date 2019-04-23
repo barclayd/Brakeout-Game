@@ -12,22 +12,22 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private int score = 0;
 
     // bricks
-    private int brickRows = 3;
-    private int brickColumns = 7;
+    private int brickRows = 4;
+    private int brickColumns = 12;
 
 
     private int totalBricks = brickColumns * brickRows;
 
     private Timer timer;
-    private int playerX = 310;
 
+    // initial positions
+    private int playerX = 310;
     private int ballPositionX = 120;
     private int ballPositionY = 350;
     private int ballXDirection = -1;
     private int ballYDirection = -2;
 
     private Brick brick;
-
 
     public Game() {
         int delay = 8;
@@ -43,30 +43,30 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public void paint(Graphics graphics) {
         // background
-        graphics.setColor(Color.black);
+        graphics.setColor(Color.BLACK);
         graphics.fillRect(1,1, 700, 600);
 
-        // bricks
+        // draw bricks to screen
         brick.draw((Graphics2D) graphics);
 
         // border
-        graphics.setColor(Color.blue);
+        graphics.setColor(Color.BLUE);
         graphics.fillRect(0,0, 3, 592);
         graphics.fillRect(0,0, 697, 3);
         graphics.fillRect(697,0, 3, 592);
         graphics.fillRect(0,575, 697, 3);
 
         // score
-        graphics.setColor(Color.white);
+        graphics.setColor(Color.WHITE);
         graphics.setFont(new Font("sans-serif", Font.BOLD, 25));
         graphics.drawString(""+score, 590, 30);
 
         // paddle
-        graphics.setColor(Color.white);
+        graphics.setColor(Color.WHITE);
         graphics.fillRect(playerX, 550, 100, 8);
 
         // ball
-        graphics.setColor(Color.orange);
+        graphics.setColor(Color.ORANGE);
         graphics.fillOval(ballPositionX, ballPositionY, 20, 20);
 
         // game over
@@ -85,6 +85,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         timer.start();
 
         if (play) {
+            // implement logic and check for collisions
             ballLogic();
             ballBrickCollision();
             ballPaddleCollision();
@@ -95,8 +96,6 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void keyTyped(KeyEvent e) {}
-
-    @Override
     public void keyReleased(KeyEvent e) {}
 
     @Override
@@ -107,16 +106,13 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             } else {
                 moveRight();
             }
-
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             if (playerX < 10) {
                 playerX = 10;
             } else {
                 moveLeft();
             }
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (!play) {
                 play = true;
                 ballPositionX = 120;
@@ -149,53 +145,63 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         ballPositionY += ballYDirection;
 
         // check for collisions with border top, left and right
-        if (ballPositionX < 0) {
+        if (ballPositionX < 0 || ballPositionX > 670) {
             ballXDirection = -ballXDirection;
         }
 
         if (ballPositionY < 0) {
             ballYDirection = -ballYDirection;
         }
-
-        if (ballPositionX > 670) {
-            ballXDirection = -ballXDirection;
-        }
     }
 
     private void ballPaddleCollision() {
-        if (new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))) {
+        if ((new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))) || new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX + 30, 550, 40, 8)))  {
             ballYDirection = -ballYDirection;
+        }
+        else if(new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX + 70, 550, 30, 8))) {
+            ballYDirection = -ballYDirection;
+            ballXDirection = ballXDirection + 1;
         }
     }
 
     private void ballBrickCollision() {
-        A: for (int i=0; i < brick.map.length; i++) {
-            for (int j=0; j < brick.map[0].length; j++) {
-                    if (brick.map[i][j] > 0) {
-                        int brickX = j * brick.brickHeight + 80;
-                        int brickY = i * brick.brickWidth + 50;
+        A: for(int i = 0; i<brick.map.length; i++)
+        {
+            for(int j =0; j<brick.map[0].length; j++)
+            {
+                if(brick.map[i][j] > 0)
+                {
+                    //scores++;
+                    int brickX = j * brick.brickWidth + 80;
+                    int brickY = i * brick.brickHeight + 50;
+                    int brickWidth = brick.brickWidth;
+                    int brickHeight = brick.brickHeight;
 
-                        // instances
-                        Rectangle ball = new Rectangle(ballPositionX, ballPositionY, 20, 20);
-                        Rectangle singleBrick = new Rectangle(brickX, brickY, brick.brickWidth, brick.brickHeight);
+                    Rectangle brickRectangle = new Rectangle(brickX, brickY, brickWidth, brickHeight);
+                    Rectangle ballRectangle = new Rectangle(ballPositionX, ballPositionY, 20, 20);
 
-                        if (ball.intersects(singleBrick)) {
-                            brick.setBrickValue(0, i, j);
-                            totalBricks--;
-                            score += 5;
-                            // change ball direction after collision with bricks
-                            if(ballPositionX + 19 <= singleBrick.x || ballPositionX + 1 >= singleBrick.x + singleBrick.width) {
-                                ballXDirection = -ballXDirection;
-                            }
-                            else {
-                                ballYDirection = -ballYDirection;
-                            }
-                            break A;
+                    if(ballRectangle.intersects(brickRectangle))
+                    {
+                        brick.setBrickValue(0, i, j);
+                        score+=5;
+                        totalBricks--;
+
+                        // when ball hit right or left of brick
+                        if(ballPositionX + 19 <= brickRectangle.x || ballPositionX + 1 >= brickRectangle.x + brickRectangle.width)
+                        {
+                            ballXDirection = -ballXDirection;
                         }
+                        // when ball hits top or bottom of brick
+                        else
+                        {
+                            ballYDirection = -ballYDirection;
+                        }
+
+                        break A;
                     }
                 }
             }
-
+        }
     }
 
     private void gameOver(Graphics graphics) {
@@ -219,7 +225,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         if (totalBricks == 0) {
             graphics.setColor(Color.WHITE);
             graphics.setFont(new Font("sans-serif", Font.BOLD, 32));
-            graphics.drawString("Level Complete! Current Score: "+score, (700/2) - 250, 300);
+            graphics.drawString("Level Complete! Current Score: "+score, (700/2) - 300, 300);
             play = false;
         }
     }
