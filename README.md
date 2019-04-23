@@ -14,12 +14,13 @@ Classic Atari game built using Java
 ```
 $ git clone https://github.com/barclayd/Breakout-Game.git
 $ cd Breakout-Game/src/breakout
+$ javac Main.java
 $ java Main
 ```
 
 ### Future Improvements
 
-* Add auto-generated multiple levels
+* Add auto-generated, infinite levels
 * Against the clock mode
 * Save and persist high scores
 
