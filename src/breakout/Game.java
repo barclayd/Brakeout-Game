@@ -27,6 +27,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private int ballXDirection = -1;
     private int ballYDirection = -2;
 
+    // player controls
+    private int playerXMovement = 20;
+
     private Brick brick;
 
     public Game() {
@@ -131,13 +134,13 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private void moveRight() {
         play = true;
-        playerX += 20;
+        playerX += playerXMovement;
 
     }
 
     private void moveLeft() {
         play = true;
-        playerX -= 20;
+        playerX -= playerXMovement;
     }
 
     private void ballLogic() {
@@ -157,21 +160,20 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private void ballPaddleCollision() {
         if ((new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))) || new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX + 30, 550, 40, 8)))  {
             ballYDirection = -ballYDirection;
+            speedUpBall();
         }
         else if(new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX + 70, 550, 30, 8))) {
             ballYDirection = -ballYDirection;
-            ballXDirection = ballXDirection + 1;
+            ballXDirection += 1;
+            speedUpBall();
         }
     }
 
     private void ballBrickCollision() {
-        A: for(int i = 0; i<brick.map.length; i++)
-        {
-            for(int j =0; j<brick.map[0].length; j++)
-            {
-                if(brick.map[i][j] > 0)
-                {
-                    //scores++;
+        A: for (int i = 0; i<brick.map.length; i++) {
+            for (int j =0; j<brick.map[0].length; j++) {
+
+                if (brick.map[i][j] > 0) {
                     int brickX = j * brick.brickWidth + 80;
                     int brickY = i * brick.brickHeight + 50;
                     int brickWidth = brick.brickWidth;
@@ -180,23 +182,21 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                     Rectangle brickRectangle = new Rectangle(brickX, brickY, brickWidth, brickHeight);
                     Rectangle ballRectangle = new Rectangle(ballPositionX, ballPositionY, 20, 20);
 
-                    if(ballRectangle.intersects(brickRectangle))
-                    {
+                    if (ballRectangle.intersects(brickRectangle)) {
                         brick.setBrickValue(0, i, j);
                         score+=5;
                         totalBricks--;
 
-                        // when ball hit right or left of brick
-                        if(ballPositionX + 19 <= brickRectangle.x || ballPositionX + 1 >= brickRectangle.x + brickRectangle.width)
-                        {
+                        // collision between ball and right or left of a brick
+                        if(ballPositionX + 19 <= brickRectangle.x || ballPositionX + 1 >= brickRectangle.x + brickRectangle.width) {
                             ballXDirection = -ballXDirection;
+                            speedUpBall();
                         }
-                        // when ball hits top or bottom of brick
-                        else
-                        {
+                        // collision between top and bottom of a brick
+                        else {
                             ballYDirection = -ballYDirection;
+                            speedUpBall();
                         }
-
                         break A;
                     }
                 }
@@ -228,6 +228,11 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             graphics.drawString("Level Complete! Current Score: "+score, (700/2) - 300, 300);
             play = false;
         }
+    }
+
+    private void speedUpBall() {
+        ballXDirection *= 1.4;
+        ballYDirection *= 1.4;
     }
 
 
