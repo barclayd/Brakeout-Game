@@ -38,7 +38,6 @@ public class Brick {
     }
 
     public void setBrickValue(int value, int row, int col) {
-        System.out.println("I was called");
         map[row][col] = value;
     }
 
