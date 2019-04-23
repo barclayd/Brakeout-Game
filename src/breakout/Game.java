@@ -55,6 +55,10 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         graphics.fillRect(697,0, 3, 592);
         graphics.fillRect(0,575, 697, 3);
 
+        // score
+        graphics.setColor(Color.white);
+        graphics.setFont(new Font("sans-serif", Font.BOLD, 25));
+        graphics.drawString(""+score, 590, 30);
 
         // paddle
         graphics.setColor(Color.white);
@@ -63,6 +67,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         // ball
         graphics.setColor(Color.orange);
         graphics.fillOval(ballPositionX, ballPositionY, 20, 20);
+
+        // game over
+        gameOver(graphics);
 
         graphics.dispose();
 
@@ -102,6 +109,21 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 playerX = 10;
             } else {
                 moveLeft();
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (!play) {
+                play = true;
+                ballPositionX = 120;
+                ballPositionY = 350;
+                ballXDirection = -1;
+                ballYDirection = -2;
+                score = 0;
+                totalBricks = 21;
+                // reset bricks
+                brick = new Brick(brickRows, brickColumns);
+                repaint();
             }
         }
 
@@ -156,12 +178,13 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                         if (ball.intersects(singleBrick)) {
                             brick.setBrickValue(0, i, j);
                             totalBricks--;
-                            score++;
+                            score += 5;
                             // change ball direction after collision with bricks
-                            if (ballPositionX + 19 <= singleBrick.x || ballPositionX + 1 >= singleBrick.x + singleBrick.width) {
-                                ballXDirection -= ballXDirection;
-                            } else {
-                                ballYDirection -= ballYDirection;
+                            if(ballPositionX + 19 <= singleBrick.x || ballPositionX + 1 >= singleBrick.x + singleBrick.width) {
+                                ballXDirection = -ballXDirection;
+                            }
+                            else {
+                                ballYDirection = -ballYDirection;
                             }
                             break A;
                         }
@@ -171,6 +194,22 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     }
 
+    private void gameOver(Graphics graphics) {
+        if (ballPositionY > 580) {
+            play = false;
+            ballXDirection = 0;
+            ballYDirection = 0;
+
+            // game over message
+            graphics.setColor(Color.red);
+            graphics.setFont(new Font("sans-serif", Font.BOLD, 32));
+            graphics.drawString("Game Over! Final Score: "+score, (700/2) - 200, 300);
+            graphics.setColor(Color.white);
+            graphics.setFont(new Font("sans-serif", Font.PLAIN, 20));
+            graphics.drawString("Press the space bar to play again", (700/2) - 150, 450);
+
+        }
+    }
 
 
 }
