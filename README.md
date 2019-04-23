@@ -1,2 +1,3 @@
-# Brakeout-Game
+# Breakout Game
+
 Classic Atari game built using Java
