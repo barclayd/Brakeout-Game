@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.Timer;
 
 public class Game extends JPanel implements KeyListener, ActionListener {
+
     // set up config for game
     private boolean play = false;
     private int score = 0;
@@ -18,8 +19,6 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private int totalBricks = brickColumns * brickRows;
 
     private Timer timer;
-    private int delay = 8;
-
     private int playerX = 310;
 
     private int ballPositionX = 120;
@@ -31,6 +30,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
 
     public Game() {
+        int delay = 8;
+
         brick = new Brick(brickRows, brickColumns);
 
         addKeyListener(this);
@@ -70,6 +71,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         // game over
         gameOver(graphics);
+
+        // level complete
+        levelComplete(graphics);
 
         graphics.dispose();
 
@@ -120,7 +124,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 ballXDirection = -1;
                 ballYDirection = -2;
                 score = 0;
-                totalBricks = 21;
+                totalBricks = brickRows * brickColumns;
                 // reset bricks
                 brick = new Brick(brickRows, brickColumns);
                 repaint();
@@ -195,7 +199,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     }
 
     private void gameOver(Graphics graphics) {
-        if (ballPositionY > 580) {
+        if (ballPositionY > 590) {
             play = false;
             ballXDirection = 0;
             ballYDirection = 0;
@@ -208,6 +212,15 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             graphics.setFont(new Font("sans-serif", Font.PLAIN, 20));
             graphics.drawString("Press the space bar to play again", (700/2) - 150, 450);
 
+        }
+    }
+
+    private void levelComplete(Graphics graphics) {
+        if (totalBricks == 0) {
+            graphics.setColor(Color.WHITE);
+            graphics.setFont(new Font("sans-serif", Font.BOLD, 32));
+            graphics.drawString("Level Complete! Current Score: "+score, (700/2) - 250, 300);
+            play = false;
         }
     }
 
