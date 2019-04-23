@@ -34,45 +34,102 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public void paint(Graphics graphics) {
         // background
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(1,1, 692, 592);
+        graphics.setColor(Color.black);
+        graphics.fillRect(1,1, 700, 600);
 
         // borders
-        graphics.setColor(Color.ORANGE);
+        graphics.setColor(Color.orange);
         graphics.fillRect(0,0, 3, 592);
-        graphics.fillRect(0,0, 692, 3);
-        graphics.fillRect(691,0, 3, 592);
+        graphics.fillRect(0,0, 697, 3);
+        graphics.fillRect(697,0, 3, 592);
+        graphics.fillRect(0,575, 697, 3);
+
 
         // paddle
-        graphics.setColor(Color.WHITE);
+        graphics.setColor(Color.white);
         graphics.fillRect(playerX, 550, 100, 8);
 
         // ball
-        graphics.setColor(Color.YELLOW);
-        graphics.fillRect(ballPositionX, ballPositionY, 20, 20);
+        graphics.setColor(Color.yellow);
+        graphics.fillOval(ballPositionX, ballPositionY, 20, 20);
+
+        graphics.dispose();
 
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        timer.start();
 
+        if (play) {
+            ballLogic();
+            ballPaddleCollision();
+        }
+
+        repaint();
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(KeyEvent e) {}
 
-    }
+    @Override
+    public void keyReleased(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            if (playerX >= 600) {
+                playerX = 600;
+            } else {
+                moveRight();
+            }
+
+        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            if (playerX <= 10) {
+                playerX = 10;
+            } else {
+                moveLeft();
+            }
+        }
 
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
+    private void moveRight() {
+        play = true;
+        playerX += 20;
 
     }
+
+    private void moveLeft() {
+        play = true;
+        playerX -= 20;
+    }
+
+    private void ballLogic() {
+        ballPositionX += ballXdirection;
+        ballPositionY += ballYdirection;
+
+        // check for collisions with border top, left and right
+        if (ballPositionX < 0) {
+            ballXdirection = -ballXdirection;
+        }
+
+        if (ballPositionY < 0) {
+            ballYdirection = -ballYdirection;
+        }
+
+        if (ballPositionX > 670) {
+            ballXdirection = -ballXdirection;
+        }
+    }
+
+    private void ballPaddleCollision() {
+        if (new Rectangle(ballPositionX, ballPositionY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))) {
+            ballYdirection = -ballYdirection;
+        }
+    }
+
 
 
 }
