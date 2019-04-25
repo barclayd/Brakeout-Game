@@ -1,6 +1,6 @@
 # Breakout Game
 
-Breakout desktop game inspired by Atari's classic [Breakout] (https://en.wikipedia.org/wiki/Breakout_(video_game)), built using Java.
+Breakout desktop game inspired by Atari's classic [Breakout](https://en.wikipedia.org/wiki/Breakout_(video_game)), built using Java.
 
 ### Demo
 
